@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f9fafc" />
+  <meta name="description" content="Responsive four-digit verification code interface." />
+  <title>Verification Code | OTP UI</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  color-scheme: light;
+  --ink: #131722;
+  --muted: #81848b;
+  --blue: #2879d9;
+  --blue-dark: #2460cf;
+  --page: #fbfbfd;
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--page);
+  color: var(--ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 18px 18px;
+}
+.card {
+  width: min(100%, 404px);
+  min-height: 484px;
+  padding: 37px 27px 28px;
+  background: #fff;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 13px 34px rgba(26, 38, 62, .042), 0 1px 4px rgba(26, 38, 62, .018);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hero-icon {
+  width: 119px;
+  height: 120px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 48% 45%, #edf4ff 0, #f1f6ff 52%, rgba(241,246,255,.15) 76%);
+  border-radius: 31px;
+  filter: drop-shadow(0 8px 20px rgba(63, 121, 216, .085));
+}
+.lock-icon { width: 69px; height: 77px; filter: drop-shadow(0 6px 5px rgba(29,89,171,.09)); }
+h1 { margin: 19px 0 0; font-size: 24px; line-height: 1.3; letter-spacing: -.8px; font-weight: 800; }
+.subtitle { margin: 9px 0 0; font-size: 14px; line-height: 1.65; font-weight: 400; color: #777980; }
+#otp-form { width: 100%; margin-top: 43px; }
+.otp-fieldset { margin: 0; padding: 0; border: 0; }
+.otp-inputs {
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+  display: flex;
+  gap: 13px;
+  isolation: isolate;
+}
+.otp-inputs::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 14px; right: 14px;
+  height: 6px;
+  border-radius: 20px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, #3e96f5, #2e6edc 57%, #edf3fa 81%);
+  opacity: .55;
+  z-index: -1;
+}
+.otp-input {
+  display: block;
+  width: 57px;
+  height: 61px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1.5px solid #e3e5ea;
+  outline: none;
+  text-align: center;
+  font-weight: 800;
+  font-size: 23px;
+  color: #204176;
+  background: linear-gradient(145deg, #fff, #fbfcfe);
+  box-shadow: 0 3px 5px rgba(35, 64, 104, .06), inset 0 2px 3px rgba(36,52,82,.025);
+  caret-color: var(--blue-dark);
+  transition: border-color .15s ease, box-shadow .15s ease, background .2s ease;
+}
+.otp-input.filled {
+  color: #fff;
+  border-color: #4da5f1;
+  background: linear-gradient(165deg, #83c5ff 0%, #378fed 38%, #2a69df 100%);
+  text-shadow: 0 1px 2px rgba(8,43,99,.32);
+  box-shadow: 0 4px 7px rgba(21,84,176,.2), inset 0 3px 3px rgba(255,255,255,.33), inset 0 -3px 2px rgba(29,72,158,.15);
+}
+.otp-input:focus-visible, .otp-input:focus {
+  border-color: #317bdc;
+  box-shadow: 0 0 0 2px rgba(45,115,218,.16), 0 3px 7px rgba(31,74,131,.1);
+}
+.otp-input.filled:focus-visible, .otp-input.filled:focus {
+  box-shadow: 0 0 0 2px rgba(45,115,218,.18), 0 4px 8px rgba(21,84,176,.2), inset 0 3px 3px rgba(255,255,255,.3);
+}
+.verify-wrapper { overflow: hidden; max-height: 0; opacity: 0; transition: max-height .25s ease, opacity .25s ease, margin-top .25s ease; }
+.verify-wrapper.visible { max-height: 66px; opacity: 1; margin-top: 22px; }
+.verify-button {
+  appearance: none; border: none; width: min(100%, 265px); height: 43px;
+  border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px;
+  color: white; background: linear-gradient(115deg, #4aabf5, #2b64d9);
+  box-shadow: 0 4px 10px rgba(36, 97, 197, .18);
+}
+.verify-button:hover { filter: brightness(.98); }
+.verify-button:active { transform: translateY(1px); }
+.verify-button:focus-visible, .resend-button:focus-visible { outline: 3px solid #9ecafa; outline-offset: 3px; }
+.resend-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; align-items: baseline; margin-top: auto; padding-top: 52px; font-size: 13px; line-height: 1.6; color: #777980; }
+.resend-button {
+  cursor: pointer; appearance: none; border: 0; padding: 0;
+  color: #3269b3; background: transparent; font-size: 13px; font-weight: 700;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.resend-button:disabled { cursor: not-allowed; color: #98a5b8; text-decoration: none; }
+.feedback { min-height: 0; margin: 0; padding: 0; font-size: 12px; line-height: 1.5; max-width: 320px; }
+.feedback:not(:empty) { margin-top: 12px; }
+.feedback.success { color: #14805a; }
+.feedback.error { color: #c53647; }
+.feedback.info { color: #4d6e9f; }
+.demo-note { color: #9b9fa8; font-size: 11px; margin: 16px 0 0; text-align: center; }
+.demo-note strong { color: #607a9d; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+.otp-inputs.shake { animation: shake .28s ease-in-out; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@media (max-width: 400px) {
+  .card { padding: 28px 15px 26px; border-radius: 21px; min-height: 465px; }
+  .otp-inputs { gap: 10px; }
+  .otp-input { width: 52px; height: 58px; }
+  h1 { font-size: 22px; }
+}
+@media (max-width: 320px) {
+  .otp-inputs { gap: 7px; }
+  .otp-input { width: 47px; }
+  .subtitle { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+  </style>
+
+</head>
+<body>
+  <main class="page">
+    <section class="card" aria-labelledby="verification-heading">
+      <div class="hero-icon" aria-hidden="true">
+        <svg class="lock-icon" viewBox="0 0 104 116" role="img" focusable="false">
+          <defs>
+            <linearGradient id="shackle" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffdb8d" />
+              <stop offset=".58" stop-color="#f5b54c" />
+              <stop offset="1" stop-color="#e89c31" />
+            </linearGradient>
+            <linearGradient id="lockface" x1="0" y1="0" x2=".95" y2="1">
+              <stop offset="0" stop-color="#70c9ff" />
+              <stop offset=".52" stop-color="#378df0" />
+              <stop offset="1" stop-color="#2561d6" />
+            </linearGradient>
+            <filter id="lockshadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" />
+            </filter>
+          </defs>
+          <ellipse cx="53" cy="108" rx="37" ry="4" fill="#3973bb" opacity=".2" filter="url(#lockshadow)" />
+          <path d="M28 48V34a24 24 0 0 1 48 0v19" fill="none" stroke="#f3b34e" stroke-width="12" stroke-linecap="round" />
+          <path d="M32 49V34a20 20 0 0 1 40 0v16" fill="none" stroke="url(#shackle)" stroke-width="8" stroke-linecap="round" />
+          <g transform="rotate(-7 52 72)">
+            <rect x="18" y="49" width="68" height="55" rx="12" fill="url(#lockface)" />
+            <path d="M24 56c3-3 7-4 14-4h31" fill="none" stroke="#b1e3ff" stroke-width="4" opacity=".63" stroke-linecap="round" />
+            <path d="M26 94h48" fill="none" stroke="#134eaf" stroke-width="2" opacity=".15" stroke-linecap="round" />
+            <circle cx="52" cy="72" r="5.5" fill="#1953af" opacity=".9" />
+            <path d="M50.5 75h3l3 11h-9z" fill="#1953af" />
+          </g>
+        </svg>
+      </div>
+
+      <h1 id="verification-heading">Verification Code</h1>
+      <p class="subtitle">Enter the 4-digit code sent to your<br class="desktop-break" /> registered device.</p>
+
+      <form id="otp-form" novalidate autocomplete="off">
+        <fieldset class="otp-fieldset">
+          <legend class="sr-only">Four-digit verification code</legend>
+          <div class="otp-inputs" role="group" aria-label="4-digit verification code">
+            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1 of 4" data-index="0" />
+            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 2 of 4" data-index="1" />
+            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 3 of 4" data-index="2" />
+            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 4 of 4" data-index="3" />
+          </div>
+        </fieldset>
+        <div class="verify-wrapper" id="verify-wrapper">
+          <button class="verify-button" type="submit" id="verify-button">Verify Code</button>
+        </div>
+      </form>
+
+      <div class="resend-area">
+        <span>Didn't receive the code?</span>
+        <button type="button" id="resend-button" class="resend-button">Resend OTP</button>
+      </div>
+      <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+    </section>
+    <p class="demo-note">UI preview only · Demo verification code: <strong>1524</strong></p>
+  </main>
+  <script>
+'use strict';
+
+// Front-end demo only. Real OTPs must be generated, delivered, and verified by a server.
+const DEMO_CODE = '1524';
+const RESEND_COOLDOWN_SECONDS = 25;
+
+const inputs = [...document.querySelectorAll('.otp-input')];
+const form = document.getElementById('otp-form');
+const verifyWrapper = document.getElementById('verify-wrapper');
+const resendButton = document.getElementById('resend-button');
+const feedback = document.getElementById('feedback');
+const inputGroup = document.querySelector('.otp-inputs');
+let cooldownInterval = null;
+
+function setFeedback(message = '', type = 'info') {
+  feedback.textContent = message;
+  feedback.className = 'feedback' + (message ? ` ${type}` : '');
+}
+
+function updateBoxes() {
+  for (const input of inputs) {
+    input.classList.toggle('filled', input.value !== '');
+  }
+  const isComplete = inputs.every(input => /^\d$/.test(input.value));
+  verifyWrapper.classList.toggle('visible', isComplete);
+  return isComplete;
+}
+
+function putDigits(start, value) {
+  const digits = String(value).replace(/\D/g, '').slice(0, inputs.length - start);
+  if (!digits) return;
+  for (let offset = 0; offset < digits.length; offset += 1) {
+    inputs[start + offset].value = digits[offset];
+  }
+  updateBoxes();
+  const target = Math.min(start + digits.length, inputs.length - 1);
+  inputs[target].focus();
+}
+
+inputs.forEach((input, index) => {
+  input.addEventListener('input', (event) => {
+    setFeedback('');
+    const entered = event.target.value.replace(/\D/g, '');
+    if (!entered) {
+      input.value = '';
+      updateBoxes();
+      return;
+    }
+    input.value = '';
+    putDigits(index, entered);
+  });
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Backspace') {
+      event.preventDefault();
+      if (input.value) input.value = '';
+      else if (index > 0) {
+        inputs[index - 1].value = '';
+        inputs[index - 1].focus();
+      }
+      updateBoxes();
+      setFeedback('');
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+      event.preventDefault(); inputs[index - 1].focus();
+    } else if (event.key === 'ArrowRight' && index < inputs.length - 1) {
+      event.preventDefault(); inputs[index + 1].focus();
+    }
+  });
+
+  input.addEventListener('paste', (event) => {
+    event.preventDefault();
+    const text = event.clipboardData?.getData('text') || '';
+    setFeedback('');
+    putDigits(index, text);
+  });
+
+  input.addEventListener('focus', () => input.select());
+});
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  if (!updateBoxes()) {
+    setFeedback('Please enter all four digits.', 'error');
+    inputs.find(input => !input.value)?.focus();
+    return;
+  }
+  const code = inputs.map(input => input.value).join('');
+  if (code === DEMO_CODE) {
+    setFeedback('Demo verification successful! No server was contacted.', 'success');
+  } else {
+    setFeedback('Incorrect demo code. Try 1524.', 'error');
+    inputGroup.classList.remove('shake');
+    void inputGroup.offsetWidth; // Restart a brief error animation.
+    inputGroup.classList.add('shake');
+  }
+});
+
+resendButton.addEventListener('click', () => {
+  if (cooldownInterval !== null) return;
+  inputs.forEach(input => { input.value = ''; });
+  updateBoxes();
+  inputs[0].focus();
+  setFeedback('Demo code reset to 1524. No SMS was sent.', 'info');
+  let secondsLeft = RESEND_COOLDOWN_SECONDS;
+  resendButton.disabled = true;
+  resendButton.textContent = `Resend in ${secondsLeft}s`;
+  cooldownInterval = window.setInterval(() => {
+    secondsLeft -= 1;
+    if (secondsLeft <= 0) {
+      window.clearInterval(cooldownInterval);
+      cooldownInterval = null;
+      resendButton.disabled = false;
+      resendButton.textContent = 'Resend OTP';
+    } else {
+      resendButton.textContent = `Resend in ${secondsLeft}s`;
+    }
+  }, 1000);
+});
+
+// Add ?demo=1 to the URL to prefill "15" as shown in the reference screenshot.
+if (new URLSearchParams(window.location.search).get('demo') === '1') {
+  inputs[0].value = '1';
+  inputs[1].value = '5';
+  updateBoxes();
+  inputs[2].focus();
+}
+
+  </script>
+</body>
+</html>

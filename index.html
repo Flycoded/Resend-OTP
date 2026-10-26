@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f9fafc" />
+  <meta name="description" content="Responsive four-digit verification code interface." />
+  <title>Verification Code | OTP UI</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="page">
+    <section class="card" aria-labelledby="verification-heading">
+      <div class="hero-icon" aria-hidden="true">
+        <svg class="lock-icon" viewBox="0 0 104 116" role="img" focusable="false">
+          <defs>
+            <linearGradient id="shackle" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffdb8d" />
+              <stop offset=".58" stop-color="#f5b54c" />
+              <stop offset="1" stop-color="#e89c31" />
+            </linearGradient>
+            <linearGradient id="lockface" x1="0" y1="0" x2=".95" y2="1">
+              <stop offset="0" stop-color="#70c9ff" />
+              <stop offset=".52" stop-color="#378df0" />
+              <stop offset="1" stop-color="#2561d6" />
+            </linearGradient>
+            <filter id="lockshadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" />
+            </filter>
+          </defs>
+          <ellipse cx="53" cy="108" rx="37" ry="4" fill="#3973bb" opacity=".2" filter="url(#lockshadow)" />
+          <path d="M28 48V34a24 24 0 0 1 48 0v19" fill="none" stroke="#f3b34e" stroke-width="12" stroke-linecap="round" />
+          <path d="M32 49V34a20 20 0 0 1 40 0v16" fill="none" stroke="url(#shackle)" stroke-width="8" stroke-linecap="round" />
+          <g transform="rotate(-7 52 72)">
+            <rect x="18" y="49" width="68" height="55" rx="12" fill="url(#lockface)" />
+            <path d="M24 56c3-3 7-4 14-4h31" fill="none" stroke="#b1e3ff" stroke-width="4" opacity=".63" stroke-linecap="round" />
+            <path d="M26 94h48" fill="none" stroke="#134eaf" stroke-width="2" opacity=".15" stroke-linecap="round" />
+            <circle cx="52" cy="72" r="5.5" fill="#1953af" opacity=".9" />
+            <path d="M50.5 75h3l3 11h-9z" fill="#1953af" />
+          </g>
+        </svg>
+      </div>
+
+      <h1 id="verification-heading">Verification Code</h1>
+      <p class="subtitle">Enter the 4-digit code sent to your<br class="desktop-break" /> registered device.</p>
+
+      <form id="otp-form" novalidate autocomplete="off">
+        <fieldset class="otp-fieldset">
+          <legend class="sr-only">Four-digit verification code</legend>
+          <div class="otp-inputs" role="group" aria-label="4-digit verification code">
+            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1 of 4" data-index="0" />
+            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 2 of 4" data-index="1" />
+            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 3 of 4" data-index="2" />
+            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 4 of 4" data-index="3" />
+          </div>
+        </fieldset>
+        <div class="verify-wrapper" id="verify-wrapper">
+          <button class="verify-button" type="submit" id="verify-button">Verify Code</button>
+        </div>
+      </form>
+
+      <div class="resend-area">
+        <span>Didn't receive the code?</span>
+        <button type="button" id="resend-button" class="resend-button">Resend OTP</button>
+      </div>
+      <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+    </section>
+    <p class="demo-note">UI preview only · Demo verification code: <strong>1524</strong></p>
+  </main>
+</body>
+</html>
